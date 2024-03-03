@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface Todo {
   id: number;
@@ -8,6 +10,26 @@ interface Todo {
 const TodoApp: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [inputText, setInputText] = useState('');
+  const navigate = useNavigate();
+
+  const fetchTodos = async ()=>{
+    try {
+      const res = await axios.get('http://localhost:5000/api/v1/todo/alltodos');
+      if(res.status!=200)
+      {
+        navigate('/login');
+      }
+      setTodos(res.data.todo);
+      
+    } catch (error:any) {
+      console.log(error.response.data.message);
+      navigate('/login');
+    }
+  };
+
+  useEffect(()=>{
+    fetchTodos();
+  }, [])
 
   const handleAddTodo = () => {
     if (inputText.trim() !== '') {

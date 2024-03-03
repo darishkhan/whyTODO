@@ -25,7 +25,7 @@ const SignupPage: React.FC = () => {
 
   const signupReguest = async ()=>{
     try {
-      const res = await axios.post('http://localhost:5000/api/v1/user/signup', user);
+      const res = await axios.post('http://localhost:5000/api/v1/users/signup', user);
 
       if(res.status === 200)
       {

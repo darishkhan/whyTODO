@@ -18,7 +18,7 @@ const LoginPage: React.FC = () => {
 
   const loginReguest = async ()=>{
     try {
-      const res = await axios.post('http://localhost:5000/api/v1/user/login', user, {
+      const res = await axios.post('http://localhost:5000/api/v1/users/login', user, {
         headers: {
           Authorization: localStorage.getItem('token')
         }
@@ -26,6 +26,7 @@ const LoginPage: React.FC = () => {
 
       if(res.status === 200)
       {
+        localStorage.setItem('token', res.data.token);
         navigate('/home');
       }
       else
