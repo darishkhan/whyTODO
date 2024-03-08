@@ -2,7 +2,7 @@ import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import * as dotenv from "dotenv";
-import authRouter from "../todoMiddleware";
+import authCheck from "../todoMiddleware";
 
 dotenv.config({ path: "../../.env" });
 const todoRouter = Router();
@@ -14,7 +14,7 @@ type User = {
     password: string
 }
 
-todoRouter.get('/alltodos', authRouter, async (req, res)=>{
+todoRouter.get('/alltodos', authCheck, async (req, res)=>{
     const token = req.headers.authorization?.split(' ')[1]||"";
 
     const secret = process.env.SECRET||"";
@@ -52,7 +52,7 @@ todoRouter.get('/alltodos', authRouter, async (req, res)=>{
     }
 });
 
-todoRouter.post('/newtodo', authRouter, async (req, res)=>{
+todoRouter.post('/newtodo', authCheck, async (req, res)=>{
     const token = req.headers.authorization?.split(' ')[1]||"";
 
     const secret = process.env.SECRET||"";

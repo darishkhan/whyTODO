@@ -2,19 +2,24 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-interface Todo {
+type Todo= {
   id: number;
   text: string;
 }
 
 const TodoApp: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<{id:number, text:string}[]>([]);
   const [inputText, setInputText] = useState('');
   const navigate = useNavigate();
 
   const fetchTodos = async ()=>{
     try {
-      const res = await axios.get('http://localhost:5000/api/v1/todo/alltodos');
+      const res = await axios.get('http://localhost:5000/api/v1/todo/alltodos', 
+      {
+        headers:{
+          Authorization: localStorage.getItem('token')
+        }
+      });
       if(res.status!=200)
       {
         navigate('/login');
@@ -37,7 +42,11 @@ const TodoApp: React.FC = () => {
         id: Date.now(),
         text: inputText.trim(),
       };
-      setTodos(prevTodos => [...prevTodos, newTodo]);
+      console.log(newTodo);
+      let todoList:Todo[] = todos!;
+      todoList?.push(newTodo);
+      console.log(todos);
+      setTodos(todoList);
       setInputText('');
     }
   };
@@ -64,7 +73,7 @@ const TodoApp: React.FC = () => {
       <div>
         <h2 className="text-lg font-semibold mb-4">Todo List</h2>
         <ul>
-          {todos.map(todo => (
+          {todos && todos.map(todo => (
               <li key={todo.id} className="flex items-center justify-between p-2 border-b border-gray-300">
               <span>{todo.text}</span>
               <button onClick={() => handleDeleteTodo(todo.id)} className="text-red-500">

@@ -1,17 +1,17 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
-import express, {Router} from 'express';
+import express, {Request, Response, NextFunction, Router} from 'express';
 import { PrismaClient } from '@prisma/client';
 
+
 const prisma = new PrismaClient();
-const authRouter = Router();
 
 dotenv.config({path:'../.env'});
 
 
-authRouter.use('', async (req, res, next)=>{
+const authCheck = async (req:Request, res:Response, next:NextFunction)=>{
     try {
-        const token = req.headers.authorization || "";
+        const token:string = req.headers.authorization!;
         if(!token.startsWith('Bearer '))
         {
             return res.status(403).json({
@@ -19,7 +19,6 @@ authRouter.use('', async (req, res, next)=>{
             })
         }
         const tokenPart = token.split(' ')[1];
-        console.log(tokenPart);
 
         const secret = process.env.SECRET||"";
         try {
@@ -31,13 +30,13 @@ authRouter.use('', async (req, res, next)=>{
                     password: verifiedToken.password
                 }
             })
+            console.log(userData);
             if(!userData)
             {
                 return res.status(403).json({
                     message: "Access denied! Login required."
                 });
             }
-            req.query['userId']=userData.id;
 
         } catch (error) {
             return res.status(403).json({
@@ -52,7 +51,7 @@ authRouter.use('', async (req, res, next)=>{
             message: "Internal Server Error"
         })
     }
-})
+}
 
-export default authRouter;
+export default authCheck;
 
